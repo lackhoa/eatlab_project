@@ -1,0 +1,23 @@
+#
+services:
+
+  inference:
+    image: roboflow/roboflow-inference-server-cpu:0.50.4
+    ports:
+      - "9001:9001"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f localhost:9001"]
+      interval: 5s
+      start_period: 10s
+      timeout: 10s
+
+  client:
+    build: ./inference-dashboard-example
+    volumes:
+      - ./inference-dashboard-example:/code
+    entrypoint: ["/bin/sh", "-c"]
+    command: ["echo run client with: inference-dashboard-example/run.sh <VIDEO_DIR> <VIDEO_FILE>"]
+    depends_on:
+      inference:
+          condition: service_healthy
+#
